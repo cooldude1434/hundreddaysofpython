@@ -36,10 +36,10 @@ machine_on = True
 
 
 def generate_report():
-    print("Water: ", resources['water'])
-    print("Milk: ", resources['milk'])
-    print("Coffee: ", resources['coffee'])
-    print("Money:")
+    print(f"Water: {resources['water']} ml")
+    print(f"Milk:  {resources['milk']} ml")
+    print(f"Coffee: {resources['coffee']}g")
+    print(f"Money: ${money}")
 
 
 def check_resources(drink):
@@ -58,11 +58,10 @@ def check_resources(drink):
 
 
 def make_drink(choosed):
-    resources["water"] = resources["water"] -  MENU[choosed]['ingredients']['water']
-    resources["coffee"] = resources["coffee"]  -  MENU[choosed]['ingredients']['coffee']
+    resources["water"] = resources["water"] - MENU[choosed]['ingredients']['water']
+    resources["coffee"] = resources["coffee"] - MENU[choosed]['ingredients']['coffee']
     if choosed == 'latte' or choosed == 'cappuccino':
         resources["milk"] = resources["milk"] - MENU[choosed]['ingredients']['milk']
-
 
 
 def get_coins_count():
@@ -72,9 +71,10 @@ def get_coins_count():
     nickel = int(input("How many nickels: "))
     pennies = int(input("How many pennies: "))
 
-    return round(((quarter * 0.25) + (dimes * 0.1) + (nickel * 0.05) + (pennies * 0.01)),2)
+    return round(((quarter * 0.25) + (dimes * 0.1) + (nickel * 0.05) + (pennies * 0.01)), 2)
 
-def check_price(choice,coins):
+
+def check_price(choice, coins):
     if coins == MENU[choice]['cost']:
         return 0
     elif coins < MENU[choice]['cost']:
@@ -83,6 +83,7 @@ def check_price(choice,coins):
         return coins - MENU[choice]['cost']
 
 
+money = 0
 
 while machine_on:
     choice = input("What would you like? (espresso/latte/cappuccino): ").lower()
@@ -93,16 +94,19 @@ while machine_on:
         generate_report()
     else:
         stock_check = check_resources(choice)
+        coins = get_coins_count()
+        enough = check_price(choice, coins)
         if stock_check == 'available':
-            coins = get_coins_count()
-            enough = check_price(choice, coins)
 
             if enough == -1:
                 print("sorry not enough coins")
             else:
                 make_drink(choice)
+                money = money + MENU[choice]['cost']
+                money = round(money, 2)
 
-                print(f"Here is ${enough} in change")
+                if enough != 0:
+                    print(f"Here is ${enough} in change")
                 print(f"Here is your {choice}, . Enjoy")
 
         else:
